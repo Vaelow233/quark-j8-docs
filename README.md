@@ -1,49 +1,26 @@
-# Starlight Starter Kit: Basics
+# Quark-J8 Documentation
 
-[![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+Documentation for [Quark-J8](https://github.com/Vaelow233/Quark-J8), built with Astro and Starlight.
 
-```
-pnpm create astro@latest -- --template starlight
-```
+## License and attribution
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The documentation is adapted from the [Quark documentation](https://bxteam.org/docs/quark) in [BX-Team/code](https://github.com/BX-Team/code).
 
-## 🚀 Project Structure
+- Original material: Copyright © 2022-2026 BX Team. Existing upstream notices are retained.
+- Modifications: Copyright © 2026 Vaelow233.
+- This documentation and the original site contributions are licensed under **AGPL-3.0-or-later**. See [LICENSE](LICENSE) for the full terms.
 
-Inside of your Astro + Starlight project, you'll see the following folders and files:
+## Modifications
 
-```
-.
-├── public/
-├── src/
-│   ├── assets/
-│   ├── content/
-│   │   └── docs/
-│   └── content.config.ts
-├── astro.config.mjs
-├── package.json
-└── tsconfig.json
+- 2026-09-17 (by *Vaelow233*): adapted the documentation for Quark-J8, updated Java requirements and Maven coordinates, adjusted platform coverage, and converted the content to Astro/Starlight. This is an independent adaptation, not an official BX Team publication.
+
+## Build
+
+With Node.js and pnpm installed:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm build
 ```
 
-Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
-
-Images can be added to `src/assets/` and embedded in Markdown with a relative link.
-
-Static assets, like favicons, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [Starlight’s docs](https://starlight.astro.build/), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
+The generated site is written to `dist/`. Use `pnpm dev` for local development or `pnpm preview` to preview the built site.

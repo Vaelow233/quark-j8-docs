@@ -1,0 +1,246 @@
+---
+title: Installing Quark-J8
+description: How to install and use Quark-J8 in your project.
+icon: Keyboard
+---
+
+import {Aside, Card, CardGrid, LinkCard, TabItem, Tabs} from "@astrojs/starlight/components";
+
+## With Gradle plugin (recommended)
+
+Quark-J8 provides a Gradle plugin that seamlessly integrates with your build script. To apply it:
+
+<Tabs>
+    <TabItem label="Gradle Kotlin">
+        ```kotlin
+        plugins {
+            id("java-library")
+            id("com.gradleup.shadow") version "8.3.11"
+            id("org.vaelow233.quark") version "1.3.0"
+        }
+        ```
+    </TabItem>
+    <TabItem label="Gradle Groovy">
+        ```groovy
+        plugins {
+            id 'java-library'
+            id 'com.gradleup.shadow' version '8.3.11'
+            id 'org.vaelow233.quark' version '1.3.0'
+        }
+        ```
+    </TabItem>
+</Tabs>
+
+Then, add your dependencies using the `quark` configuration block:
+
+<Tabs>
+    <TabItem label="Gradle Kotlin">
+        ```kotlin
+        dependencies {
+            // Add your runtime dependencies using quark configuration
+            quark("com.google.code.gson:gson:2.10.1")
+
+            // you can use the dependency notation and exclude modules as you
+            // would with other configurations
+            quark("com.google.inject:guice:7.0.0") {
+                exclude("com.google.guava", "guava")
+            }
+        }
+        ```
+    </TabItem>
+    <TabItem label="Gradle Groovy">
+        ```groovy
+        dependencies {
+            // Add your runtime dependencies using quark configuration
+            quark "com.google.code.gson:gson:2.10.1"
+
+            // you can use the dependency notation and exclude modules as you
+            // would with other configurations
+            quark("com.google.inject:guice:7.0.0") {
+                exclude group: "com.google.guava", module: "guava"
+            }
+        }
+        ```
+    </TabItem>
+</Tabs>
+
+After adding your dependencies, you need to configure the Quark-J8 extension, by specifying the platform and other settings:
+
+<Tabs>
+    <TabItem label="Gradle Kotlin">
+        ```kotlin
+        quark {
+            // Specify the platform that will be used in your project (bukkit, paper, velocity, bungee or sponge)
+            platform = "your-platform"
+
+            // repositories to fetch dependencies from
+            //
+            // by default: includes maven central mirror
+            repositories {
+                // example repository
+                maven("https://jitpack.io/")
+
+                // optional: use all repositories declared in this
+                // file if you don't want to re-include everything here
+                includeProjectRepositories()
+            }
+
+            // relocate libraries here
+            // com.google.code.gson --> org.bxteam.deps.gson
+            relocate("com.google.code.gson", "org.bxteam.deps.gson")
+        }
+        ```
+    </TabItem>
+    <TabItem label="Gradle Groovy">
+        ```groovy
+        quark {
+            // Specify the platform that will be used in your project (bukkit, paper, velocity, bungee or sponge)
+            platform = "your-platform"
+
+            // repositories to fetch dependencies from
+            //
+            // by default: includes maven central mirror
+            repositories {
+                // example repository
+                maven "https://jitpack.io/"
+
+                // optional: use all repositories declared in this
+                // file if you don't want to re-include everything here
+                includeProjectRepositories()
+            }
+
+            // relocate libraries here
+            // com.google.code.gson --> org.bxteam.deps.gson
+            relocate "com.google.code.gson", "org.bxteam.deps.gson"
+        }
+        ```
+    </TabItem>
+</Tabs>
+
+Then, in your plugin, use the library manager with Gradle integration:
+
+```java
+public class YourPlugin extends JavaPlugin {
+    private BukkitLibraryManager libraryManager; // Replace with your library manager (BungeeCord, Sponge, etc.)
+
+    @Override
+    public void onLoad() {
+        libraryManager = new BukkitLibraryManager(this); // Replace with your library manager (BungeeCord, Sponge, etc.)
+        libraryManager.loadFromGradle();
+    }
+}
+```
+
+Finally, build with `shadowJar`:
+```shell
+./gradlew shadowJar
+```
+
+## Classic Way
+
+If you don't want to use the Gradle plugin, you can still use Quark-J8 by manually adding the dependencies to your project.
+
+### Adding Dependencies
+
+To use Quark-J8 you need to add Maven Central Repository to your repositories and Quark-J8 to your dependencies in your project.
+
+Depending on the build system you are using, add the following code to your project:
+
+#### Repository Configuration
+
+<Tabs>
+    <TabItem label="Gradle Kotlin">
+        ```kotlin
+        mavenCentral()
+        ```
+    </TabItem>
+    <TabItem label="Gradle Groovy">
+        ```groovy
+        mavenCentral()
+        ```
+    </TabItem>
+    <TabItem label="Maven">
+        ```xml
+        <repositories>
+            <repository>
+                <id>central</id>
+                <url>https://repo1.maven.org/maven2/</url>
+            </repository>
+        </repositories>
+        ```
+    </TabItem>
+</Tabs>
+
+#### Dependency Configuration
+
+<Tabs>
+    <TabItem label="Gradle Kotlin">
+        ```kotlin
+        implementation("org.vaelow233.quark:{platform}:1.3.0")
+        ```
+    </TabItem>
+    <TabItem label="Gradle Groovy">
+        ```groovy
+        implementation "org.vaelow233.quark:{platform}:1.3.0"
+        ```
+    </TabItem>
+    <TabItem label="Maven">
+        ```xml
+        <dependency>
+            <groupId>org.vaelow233.quark</groupId>
+            <artifactId>{platform}</artifactId>
+            <version>1.3.0</version>
+        </dependency>
+        ```
+    </TabItem>
+</Tabs>
+
+<Aside type="caution" title="Replacing {platform}">Replace `{platform}` with the platform you want to use (See [platforms](/getting-started/platforms)).</Aside>
+
+### Library Manager Setup
+
+Quark-J8 provides platform-specific library managers that handle dependency loading for different Minecraft server platforms. Each platform has its own manager class that you'll need to initialize in your plugin.
+
+<Tabs>
+    <TabItem label="Bukkit">
+        ```java
+        public class BukkitTestPlugin extends JavaPlugin {
+            private BukkitLibraryManager libraryManager;
+
+            @Override
+            public void onLoad() {
+                libraryManager = new BukkitLibraryManager(this);
+                libraryManager.addGoogleMavenCentralMirror();
+
+                libraryManager.loadDependency("com.google.code.gson", "gson", "2.10.1");
+            }
+        }
+        ```
+    </TabItem>
+    <TabItem label="BungeeCord">
+        ```java
+        public class BungeeTestPlugin extends Plugin {
+            private BungeeLibraryManager libraryManager;
+
+            @Override
+            public void onLoad() {
+                libraryManager = new BungeeLibraryManager(this);
+                libraryManager.addGoogleMavenCentralMirror();
+
+                libraryManager.loadDependency("com.google.code.gson", "gson", "2.10.1");
+            }
+        }
+        ```
+    </TabItem>
+</Tabs>
+
+## Next Steps
+
+If you want to learn more, you can read next pages with advanced usage instructions.
+
+<CardGrid>
+    <LinkCard title="Dependency Management" href="/advanced-usage/dependency-management" description="Load and manage Maven dependencies at runtime with Quark." />
+    <LinkCard title="Isolated Class Loaders" href="/advanced-usage/isolated-classloaders" description="Use isolated class loaders to prevent dependency conflicts." />
+    <LinkCard title="Package Relocation" href="/advanced-usage/package-relocation" description="Use package relocation to avoid namespace conflicts between libraries." />
+    <LinkCard title="Repository Configuration" href="/advanced-usage/repository-configuration" description="Configure Maven repositories for dependency resolution in Quark." />
+</CardGrid>
